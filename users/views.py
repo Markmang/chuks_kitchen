@@ -9,14 +9,20 @@ from django.utils import timezone
 class SignupView(APIView):
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
+
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+
             return Response(
-                {"message": "User created. OTP sent."},
+                {
+                    "message": "User created. OTP sent.",
+                    "user_id": user.id,
+                    "otp_for_testing": user.otp
+                },
                 status=status.HTTP_201_CREATED
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyOTPView(APIView):
     def post(self, request):

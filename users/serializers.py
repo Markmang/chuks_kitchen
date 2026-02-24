@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User
 from django.utils import timezone
+from orders.models import Cart
 
 
 class SignupSerializer(serializers.ModelSerializer):
@@ -12,4 +13,11 @@ class SignupSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         user.generate_otp()
+        return user
+    
+
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        user.generate_otp()
+        Cart.objects.create(user=user)   # auto-create cart
         return user
